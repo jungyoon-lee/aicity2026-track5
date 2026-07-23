@@ -1,0 +1,17 @@
+{
+  "format": "cosmos3-native-lora",
+  "base_model": "nvidia/Cosmos3-Super",
+  "rank": 16,
+  "alpha": 32,
+  "target_modules": [
+    "q_proj_moe_gen",
+    "k_proj_moe_gen",
+    "v_proj_moe_gen",
+    "o_proj_moe_gen"
+  ],
+  "tensor_count": 512,
+  "parameter_count": 39845888,
+  "dtype_counts": {
+    "bfloat16": 512
+  }
+}

@@ -1,0 +1,7 @@
+/data/
+/outputs/
+/logs/
+*.zip
+.venv/
+__pycache__/
+*.py[cod]

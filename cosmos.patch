@@ -1,0 +1,148 @@
+diff -ruN _a/cosmos_framework/checkpoint/dcp.py _b/cosmos_framework/checkpoint/dcp.py
+--- a/cosmos_framework/checkpoint/dcp.py	2026-07-22 00:52:52.019970430 +0900
++++ b/cosmos_framework/checkpoint/dcp.py	2026-07-22 00:52:52.020970411 +0900
+@@ -757,6 +757,32 @@
+ 
+         log.info(f"Saved checkpoint to {os.path.join(self.save_dirname, checkpoint_file)}")
+ 
++    def save_model_only_for_eval(self, model: ImaginaireModel, iteration: int) -> None:
++        """Save only model weights for inference/eval without updating resume metadata."""
++        if self.async_mode == AsyncMode.ASYNC_WITH_PINNED_MEM:
++            self._wait_for_previous_async_checkpoint()
++
++        checkpoint_file = f"iter_{iteration:09}"
++        output_dirname = os.path.join(self.save_dirname, checkpoint_file, "model")
++        storage_writer = self.get_storage_writer(output_dirname)
++        save_planner = CustomSavePlanner(
++            dedup_save_to_lowest_rank=True,
++            enable_plan_caching=True,
++            cache_plans_key="custom_planner_eval_model",
++        )
++
++        start_time = time.monotonic()
++        dcp.save(
++            ModelWrapper(model).state_dict(),
++            storage_writer=storage_writer,
++            planner=save_planner,
++        )
++        elapsed_time = time.monotonic() - start_time
++        log.info(
++            f"Saved model-only eval checkpoint to {os.path.join(self.save_dirname, checkpoint_file)} "
++            f"in {elapsed_time:.2f} seconds"
++        )
++
+     def save(
+         self,
+         model: ImaginaireModel,
+diff -ruN _a/cosmos_framework/inference/args.py _b/cosmos_framework/inference/args.py
+--- a/cosmos_framework/inference/args.py	2026-07-22 00:52:52.042969993 +0900
++++ b/cosmos_framework/inference/args.py	2026-07-22 00:52:52.044969955 +0900
+@@ -886,6 +886,9 @@
+ 
+     sampler: Literal["unipc", "edm"]
+ 
++    adapter_path: ResolvedFilePath | None
++    """Optional Cosmos3-native LoRA safetensors file loaded over the base checkpoint."""
++
+     # Override defaults
+     cp_size: CpSize
+ 
+@@ -945,6 +948,9 @@
+ 
+     sampler: Literal["unipc", "edm"] = "unipc"
+ 
++    adapter_path: ResolvedFilePath | None = None
++    """Optional Cosmos3-native LoRA safetensors file loaded over the base checkpoint."""
++
+     # Override defaults
+     dp_replicate_size: pydantic.NonNegativeInt = 0
+     dp_shard_size: pydantic.NonNegativeInt = 0
+diff -ruN _a/cosmos_framework/inference/inference.py _b/cosmos_framework/inference/inference.py
+--- a/cosmos_framework/inference/inference.py	2026-07-22 00:52:52.055969746 +0900
++++ b/cosmos_framework/inference/inference.py	2026-07-22 00:52:52.057969708 +0900
+@@ -1056,6 +1056,7 @@
+                 config=config,
+                 parallelism_config=parallelism_config,
+                 compile_config=compile_config,
++                adapter_path=setup_args.adapter_path,
+             ).model
+             if model.config.rectified_flow_inference_config.scheduler_type != sampler_override:
+                 model.config.rectified_flow_inference_config.scheduler_type = sampler_override
+diff -ruN _a/cosmos_framework/inference/model.py _b/cosmos_framework/inference/model.py
+--- a/cosmos_framework/inference/model.py	2026-07-22 00:52:52.070969461 +0900
++++ b/cosmos_framework/inference/model.py	2026-07-22 00:52:52.071969442 +0900
+@@ -438,6 +438,7 @@
+         config: Cosmos3OmniConfig | None = None,
+         parallelism_config: ParallelismConfig | None = None,
+         compile_config: CompileConfig | None = None,
++        adapter_path: Path | None = None,
+     ):
+         if config is None:
+             config = Cosmos3OmniConfig.from_pretrained(checkpoint_path)
+@@ -466,9 +467,50 @@
+                 storage_reader = HuggingFaceStorageReader(str(checkpoint_path))
+             case _:
+                 assert_never(checkpoint_type)
+-        dcp.load(state_dict=state_dict, storage_reader=storage_reader)
++        if adapter_path is None:
++            dcp.load(state_dict=state_dict, storage_reader=storage_reader)
++        else:
++            if checkpoint_type != CheckpointType.DCP:
++                raise ValueError("LoRA adapter loading currently requires a DCP base checkpoint")
++            cls._load_lora_over_dcp(state_dict, storage_reader, adapter_path)
+         return model
+ 
++    @staticmethod
++    def _load_lora_over_dcp(
++        state_dict: dict[str, Any],
++        storage_reader: FileSystemReader,
++        adapter_path: Path,
++    ) -> None:
++        from safetensors.torch import load_file
++
++        adapter_path = Path(adapter_path)
++        adapter_state = load_file(str(adapter_path), device="cpu")
++        expected_keys = {key for key in state_dict if "lora_" in key}
++        actual_keys = set(adapter_state)
++        if actual_keys != expected_keys:
++            missing = sorted(expected_keys - actual_keys)
++            unexpected = sorted(actual_keys - expected_keys)
++            raise ValueError(
++                f"LoRA adapter keys do not match the configured model: "
++                f"missing={missing[:8]}, unexpected={unexpected[:8]}"
++            )
++
++        base_state = {key: value for key, value in state_dict.items() if key not in expected_keys}
++        dcp.load(state_dict=base_state, storage_reader=storage_reader)
++
++        with torch.no_grad():
++            for key in sorted(expected_keys):
++                target = state_dict[key]
++                if hasattr(target, "to_local"):
++                    target = target.to_local()
++                source = adapter_state[key]
++                if tuple(source.shape) != tuple(target.shape):
++                    raise ValueError(
++                        f"LoRA tensor shape mismatch for {key}: adapter={tuple(source.shape)}, "
++                        f"model={tuple(target.shape)}"
++                    )
++                target.copy_(source.to(device=target.device, dtype=target.dtype))
++
+     @classmethod
+     def before_load_model(cls):
+         # Disable duck shapes, which triggers recompile.
+diff -ruN _a/cosmos_framework/trainer/__init__.py _b/cosmos_framework/trainer/__init__.py
+--- a/cosmos_framework/trainer/__init__.py	2026-07-22 00:52:52.032970183 +0900
++++ b/cosmos_framework/trainer/__init__.py	2026-07-22 00:52:52.034970145 +0900
+@@ -304,8 +304,11 @@
+                     # Do the following when an actual optimizer (update) step has been made.
+                     iteration += 1
+                     # Save checkpoint.
++                    eval_save_iter = int(os.environ.get("AICITY_EVAL_SAVE_ITER", "0") or "0")
+                     if iteration % self.config.checkpoint.save_iter == 0:
+                         self.checkpointer.save(model, optimizer, scheduler, grad_scaler, iteration=iteration)
++                    elif eval_save_iter > 0 and iteration % eval_save_iter == 0:
++                        self.checkpointer.save_model_only_for_eval(model, iteration=iteration)
+                     self.callbacks.on_training_step_end(model, data_batch, output_batch, loss, iteration=iteration)
+                     # Validation.
+                     if self.config.trainer.run_validation and iteration % self.config.trainer.validation_iter == 0:
