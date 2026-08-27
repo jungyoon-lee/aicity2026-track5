@@ -22,6 +22,17 @@
     "provenance": "Submitted Cosmos3-Super LoRA prediction, video4134, frames 0-56"
   },
   {
+    "file": "task_contract.gif",
+    "bytes": 5288566,
+    "sha256": "a3ea71ae13028aa851193aeab591580d8d5e08241f0c8af547a0f851391feb81",
+    "dimensions": [
+      1382,
+      360
+    ],
+    "frames": 53,
+    "provenance": "Synchronized two-phase animation of released test case video4134: 40 observed frames, boundary pulse, then 57 submitted forecast frames"
+  },
+  {
     "file": "domain_wts.gif",
     "bytes": 3102229,
     "sha256": "f15f9208af137fda8abce1e13aeb8ee225e8f13df82457b5ea01aa096cf5adcc",
