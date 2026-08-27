@@ -1,0 +1,145 @@
+[
+  {
+    "file": "task_observed.jpg",
+    "bytes": 136753,
+    "sha256": "42b032af6b884962e1c5b05f5a6e74648a81a8cf8df9d6c1dbeb160ead2f2063",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "frames": 1,
+    "provenance": "AI City 2026 Track 5 released test input, video4134, frame 39"
+  },
+  {
+    "file": "task_generated.gif",
+    "bytes": 2900118,
+    "sha256": "03b4e48bd4db0e82313240cdb97f4f96d22bbf6a7c2a99b5aaf205d1067f2d8d",
+    "dimensions": [
+      640,
+      360
+    ],
+    "frames": 29,
+    "provenance": "Submitted Cosmos3-Super LoRA prediction, video4134, frames 0-56"
+  },
+  {
+    "file": "domain_wts.gif",
+    "bytes": 3102229,
+    "sha256": "f15f9208af137fda8abce1e13aeb8ee225e8f13df82457b5ea01aa096cf5adcc",
+    "dimensions": [
+      640,
+      360
+    ],
+    "frames": 33,
+    "provenance": "Official WTS project gallery clip: https://woven-visionai.github.io/wts-dataset-homepage/video/low/gal_2.mp4"
+  },
+  {
+    "file": "domain_bdd.gif",
+    "bytes": 3148175,
+    "sha256": "a904f3aa69ec955ce15a2549580c5966c87e50a61269efffb471b9ce713a61cb",
+    "dimensions": [
+      640,
+      360
+    ],
+    "frames": 32,
+    "provenance": "Organizer-provided BDD_PC_5K validation clip video2907, 21.5-26.9 s"
+  },
+  {
+    "file": "adapter_case1026.gif",
+    "bytes": 7880179,
+    "sha256": "af62436c971704c6cb198e5a4d182283d3341943087d5aa198aedaf926986385",
+    "dimensions": [
+      1440,
+      270
+    ],
+    "frames": 43,
+    "provenance": "Held-out BDD_PC_5K case video1026: ground truth, frozen Cosmos3-Super, and submitted LoRA; case is near the median PSNR gain"
+  },
+  {
+    "file": "bdd_observed.jpg",
+    "bytes": 136753,
+    "sha256": "42b032af6b884962e1c5b05f5a6e74648a81a8cf8df9d6c1dbeb160ead2f2063",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "frames": 1,
+    "provenance": "BDD-style released test input or submitted prediction"
+  },
+  {
+    "file": "bdd_future_00.jpg",
+    "bytes": 145561,
+    "sha256": "4e7f892a0d238c290b122c15a5481ced4a7bdb19c85c03d97ca6df62e65896a7",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "frames": 1,
+    "provenance": "BDD-style released test input or submitted prediction"
+  },
+  {
+    "file": "bdd_future_mid.jpg",
+    "bytes": 141285,
+    "sha256": "963b53b6b7062fe3bf683729fdae9aeb9a87b44642a5a1bda7e6387d7868c032",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "frames": 1,
+    "provenance": "BDD-style released test input or submitted prediction"
+  },
+  {
+    "file": "bdd_future_end.jpg",
+    "bytes": 139473,
+    "sha256": "8c4cc13f3d469831508ac5b8fbec4fc5cf02054129d1d1ed2baf093a14c01066",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "frames": 1,
+    "provenance": "BDD-style released test input or submitted prediction"
+  },
+  {
+    "file": "wts_observed.jpg",
+    "bytes": 298728,
+    "sha256": "4688458d45ff5a7cb402ec990f67880519e43c981a20915e261824b6e9bc1fd2",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "frames": 1,
+    "provenance": "WTS fixed-camera released test input or submitted prediction"
+  },
+  {
+    "file": "wts_future_00.jpg",
+    "bytes": 310323,
+    "sha256": "bc8d79494ac78fb7fa06a817ed1e37ab80ad7264e7a17a4c60d5e03958c0bdc3",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "frames": 1,
+    "provenance": "WTS fixed-camera released test input or submitted prediction"
+  },
+  {
+    "file": "wts_future_mid.jpg",
+    "bytes": 314729,
+    "sha256": "76d59b12304e14728f83fca108578b3b74673b65f38671988a3be052899bc53c",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "frames": 1,
+    "provenance": "WTS fixed-camera released test input or submitted prediction"
+  },
+  {
+    "file": "wts_future_end.jpg",
+    "bytes": 319182,
+    "sha256": "b13e69e37cfd4d71a7442527d7362d9a1482b16fb327e7dec57a3760fa498f29",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "frames": 1,
+    "provenance": "WTS fixed-camera released test input or submitted prediction"
+  }
+]
