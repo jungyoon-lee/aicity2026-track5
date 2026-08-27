@@ -44,15 +44,37 @@
     "provenance": "Organizer-provided BDD_PC_5K validation clip video2907, 21.5-26.9 s"
   },
   {
-    "file": "adapter_case1026.gif",
-    "bytes": 7880179,
-    "sha256": "af62436c971704c6cb198e5a4d182283d3341943087d5aa198aedaf926986385",
+    "file": "domain_wts.jpg",
+    "bytes": 92450,
+    "sha256": "be5080c3cb1c43833c871ed38ecbd94cbe1522abe47441651f1686a123ca073f",
+    "dimensions": [
+      640,
+      360
+    ],
+    "frames": 1,
+    "provenance": "Representative still from official WTS project gallery clip: https://woven-visionai.github.io/wts-dataset-homepage/video/low/gal_2.mp4"
+  },
+  {
+    "file": "domain_bdd.jpg",
+    "bytes": 69972,
+    "sha256": "dd3db9759bfd2b9fa19a0aafcaff4ac115e972ca2c6b87cf0d7ce9a381c5cb1a",
+    "dimensions": [
+      640,
+      360
+    ],
+    "frames": 1,
+    "provenance": "Representative still from organizer-provided BDD_PC_5K validation clip video2907"
+  },
+  {
+    "file": "adapter_case1026_crop.gif",
+    "bytes": 10210643,
+    "sha256": "29ccc39a0f38136b6a3ecd8044d4412dffb5c7407290d08e81b0d3da4ff3b361",
     "dimensions": [
       1440,
-      270
+      360
     ],
     "frames": 43,
-    "provenance": "Held-out BDD_PC_5K case video1026: ground truth, frozen Cosmos3-Super, and submitted LoRA; case is near the median PSNR gain"
+    "provenance": "Held-out BDD_PC_5K case video1026: ground truth, frozen Cosmos3-Super, and submitted LoRA, with an identical 2x center crop; case is near the median PSNR gain"
   },
   {
     "file": "bdd_observed.jpg",
