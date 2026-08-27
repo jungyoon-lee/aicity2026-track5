@@ -22,9 +22,9 @@
     "provenance": "Submitted Cosmos3-Super LoRA prediction, video4134, frames 0-56"
   },
   {
-    "file": "task_contract.gif",
-    "bytes": 5288566,
-    "sha256": "a3ea71ae13028aa851193aeab591580d8d5e08241f0c8af547a0f851391feb81",
+    "file": "task_contract_sequence.gif",
+    "bytes": 5307124,
+    "sha256": "0c5ed64f532a42ce38d53d213ed3d82b50816fd542b6dbf7e192faf6f4c75112",
     "dimensions": [
       1382,
       360
